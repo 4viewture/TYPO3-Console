@@ -30,9 +30,14 @@ use Symfony\Component\Process\Process;
 class CommandDispatcher
 {
     /**
+     * @var string
+     */
+    private $phpBinary;
+
+    /**
      * @var array
      */
-    private $commandLinePrefix;
+    private $commandLine;
 
     /**
      * @var array
@@ -42,12 +47,14 @@ class CommandDispatcher
     /**
      * Don't allow object creation without factory method
      *
-     * @param array $commandLinePrefix
+     * @param string $phpBinary
+     * @param array $commandLine
      * @param array $environmentVars
      */
-    private function __construct(array $commandLinePrefix, array $environmentVars = [])
+    private function __construct(string $phpBinary, array $commandLine, array $environmentVars = [])
     {
-        $this->commandLinePrefix = $commandLinePrefix;
+        $this->phpBinary = $phpBinary;
+        $this->commandLine = $commandLine;
         $this->environmentVars = $environmentVars;
     }
 
@@ -129,14 +136,13 @@ class CommandDispatcher
             throw new RuntimeException('The "php" binary could not be found.', 1485128615);
         }
         array_unshift($commandLine, $typo3CommandPath);
-        array_unshift($commandLine, $php);
         if (getenv('PHP_INI_PATH')) {
             $commandLine[] = '-c';
             $commandLine[] = getenv('PHP_INI_PATH');
         }
         $environmentVars['TYPO3_CONSOLE_SUB_PROCESS'] = true;
 
-        return new self($commandLine, $environmentVars);
+        return new self($php, $commandLine, $environmentVars);
     }
 
     /**
@@ -152,7 +158,7 @@ class CommandDispatcher
     public function executeCommand($command, array $arguments = [], array $envVars = [], $input = null): string
     {
         $envVars = array_replace($this->environmentVars, $envVars);
-        $commandLine = $this->commandLinePrefix;
+        $commandLine = $this->commandLine;
 
         $commandLine[] = $command;
         foreach ($arguments as $argumentName => $argumentValue) {
@@ -201,14 +207,14 @@ class CommandDispatcher
             // During a composer run, we have symfony/console 2.8 unfortunately,
             // thus we must handle convert the arguments to a string.
             $process = new Process(
-                implode(' ', array_map(ProcessExecutor::class . '::escape', $commandLine)),
+                $this->phpBinary . ' ' . implode(' ', array_map(ProcessExecutor::class . '::escape', $commandLine)),
                 null,
                 array_replace($this->getDefaultEnv(), $envVars),
                 $input,
                 0
             );
         } else {
-            $process = new Process($commandLine, null, $envVars, $input, 0);
+            $process = new Process($this->phpBinary . ' ' . (new Process($commandLine))->getCommandLine(), null, $envVars, $input, 0);
             $process->inheritEnvironmentVariables();
         }
 

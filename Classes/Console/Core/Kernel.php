@@ -70,7 +70,7 @@ class Kernel
      */
     private function ensureRequiredEnvironment()
     {
-        if (PHP_SAPI !== 'cli' || !isset($_SERVER['argc'], $_SERVER['argv'])) {
+        if ((PHP_SAPI !== 'cli' && PHP_SAPI !== 'phpdbg') || !isset($_SERVER['argc'], $_SERVER['argv'])) {
             echo 'The command line must be executed with a cli PHP binary! The current PHP sapi type is "' . PHP_SAPI . '".' . PHP_EOL;
             exit(1);
         }
