@@ -178,12 +178,51 @@ abstract class AbstractCommandTest extends \PHPUnit\Framework\TestCase
         try {
             return $this->commandDispatcher->executeCommand($command, $arguments, $environment, $stdIn);
         } catch (FailedSubProcessCommandException $e) {
-            $exceptionRenderer = new ExceptionRenderer();
-            $output = new BufferedOutput(BufferedOutput::VERBOSITY_DEBUG);
-            $exceptionRenderer->render($e, $output);
-            $this->fail($output->fetch());
+            $this->failException($e);
         }
 
         return '';
+    }
+
+    protected function executeCoveredConsoleCommand($command, array $arguments = [], array $environment = [], string $stdIn = null, bool $throw = false)
+    {
+        if ($this->getTestResultObject()->getCodeCoverage() === null) {
+            return $this->executeConsoleCommand($command, $arguments, $environment, $stdIn);
+        }
+
+        $commandDispatcher = CommandDispatcher::createFromTestRun(__DIR__ . '/../../../../Scripts/typo3-console-debug.php');
+        try {
+            $result = @unserialize($commandDispatcher->executeCommand($command, $arguments, $environment));
+        } catch (FailedSubProcessCommandException $e) {
+            $result = @unserialize($e->getOutputMessage());
+            if (!empty($result['output'])) {
+                $e = new FailedSubProcessCommandException(
+                    $e->getCommand(),
+                    $e->getCommandLine(),
+                    $e->getExitCode(),
+                    $result['output'],
+                    $e->getErrorMessage()
+                );
+            }
+            if ($throw) {
+                throw $e;
+            }
+            $this->failException($e);
+        } finally {
+            $coverage = $this->getTestResultObject()->getCodeCoverage();
+            if ($coverage && !empty($result['coverage'])) {
+                $coverage->merge($result['coverage']);
+            }
+        }
+
+        return trim($result['output']);
+    }
+
+    private function failException(\Throwable $e)
+    {
+        $exceptionRenderer = new ExceptionRenderer();
+        $output = new BufferedOutput(BufferedOutput::VERBOSITY_DEBUG);
+        $exceptionRenderer->render($e, $output);
+        $this->fail($output->fetch());
     }
 }

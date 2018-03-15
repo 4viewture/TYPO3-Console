@@ -24,6 +24,7 @@ use Helhum\Typo3Console\Mvc\Cli\CommandConfiguration;
 use Helhum\Typo3Console\Mvc\Cli\Symfony\Application;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Package\PackageManager;
@@ -136,11 +137,12 @@ class Kernel
      * Handle the given command input and return the exit code of the called command
      *
      * @param InputInterface $input
+     * @param OutputInterface|null $output
      * @throws Exception
      * @throws InvalidArgumentException
      * @return int
      */
-    public function handle(InputInterface $input): int
+    public function handle(InputInterface $input, OutputInterface $output = null): int
     {
         $this->initialize();
 
@@ -159,7 +161,7 @@ class Kernel
             $commandCollection->addCommandControllerCommands($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['extbase']['commandControllers'] ?? []);
         }
 
-        return $application->run($input);
+        return $application->run($input, $output);
     }
 
     /**
