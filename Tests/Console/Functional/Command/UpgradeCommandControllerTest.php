@@ -42,7 +42,7 @@ class UpgradeCommandControllerTest extends AbstractCommandTest
      */
     public function canCheckExtensionConstraints()
     {
-        $output = $this->executeConsoleCommand('upgrade:checkextensionconstraints');
+        $output = $this->executeCoveredConsoleCommand('upgrade:checkextensionconstraints');
         $this->assertContains('All third party extensions claim to be compatible with TYPO3 version', $output);
     }
 
@@ -54,7 +54,7 @@ class UpgradeCommandControllerTest extends AbstractCommandTest
         $this->installFixtureExtensionCode('ext_test');
         $this->executeConsoleCommand('extension:activate', ['ext_test']);
         try {
-            $this->commandDispatcher->executeCommand('upgrade:checkextensionconstraints', ['--typo3-version' => '3.6.0']);
+            $this->executeCoveredConsoleCommand('upgrade:checkextensionconstraints', ['--typo3-version' => '3.6.0'], [], null, true);
         } catch (FailedSubProcessCommandException $e) {
             $this->assertSame(1, $e->getExitCode());
             $this->assertContains('"ext_test" requires TYPO3 versions 4.5.0', $e->getOutputMessage());
@@ -68,7 +68,7 @@ class UpgradeCommandControllerTest extends AbstractCommandTest
      */
     public function checkExtensionConstraintsIssuesWarningForInvalidExtensionKeys()
     {
-        $output = $this->executeConsoleCommand('upgrade:checkextensionconstraints', ['foo,bar']);
+        $output = $this->executeCoveredConsoleCommand('upgrade:checkextensionconstraints', ['foo,bar']);
         $this->assertContains('Extension "foo" is not found in the system', $output);
         $this->assertContains('Extension "bar" is not found in the system', $output);
     }
@@ -85,9 +85,9 @@ class UpgradeCommandControllerTest extends AbstractCommandTest
             $this->setUpNewTypo3Instance();
             $this->upgradeCodeToTypo3Version(getenv('TYPO3_VERSION'));
 
-            $output = $this->executeConsoleCommand('upgrade:list');
+            $output = $this->executeCoveredConsoleCommand('upgrade:list');
             $this->assertContains('Wizards scheduled for execution', $output);
-            $output = $this->executeConsoleCommand('upgrade:all');
+            $output = $this->executeCoveredConsoleCommand('upgrade:all');
             $this->assertContains('Initiating TYPO3 upgrade', $output);
             $this->assertContains('Successfully upgraded TYPO3 to version', $output);
         } catch (\Throwable $e) {

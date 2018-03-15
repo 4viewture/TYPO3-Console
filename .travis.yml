@@ -70,41 +70,41 @@ jobs:
         - errors=$(find . -name \*.php ! -path "./.Build/*" -exec php -d display_errors=stderr -l {} 2>&1 >/dev/null \;) && echo "$errors" && test -z "$errors"
     - <<: *lint
       php: 7.1
-    - <<: *lint
-      php: 7.0
-
-    - stage: test
-      php: 7.2
-      env: TYPO3_VERSION=^8.7.10
-    - stage: test
-      php: 7.1
-      env: TYPO3_VERSION=^8.7.10
-    - stage: test
-      php: 7.0
-      env: TYPO3_VERSION=^8.7.10
-    - stage: test
-      php: 7.0
-      env: TYPO3_VERSION=^8.7.10 PREFER_LOWEST="--prefer-lowest"
-    - stage: test
-      php: 7.2
-      env: TYPO3_VERSION="~9.1.0"
-    - stage: test
-      php: 7.2
-      env: TYPO3_VERSION="9.2.*@dev"
-
-    - stage: test
-      php: 7.1
-      env: Consistency checks
-      before_install: skip
-      install: skip
-      before_script: skip
-      script:
-        - >
-          if [ -n "$TRAVIS_TAG" ]; then
-            composer set-version $TRAVIS_TAG
-            test -z "$(git diff --shortstat 2> /dev/null | tail -n1)";
-          fi
-        - composer extension-create-libs && ls -la Libraries/*.phar | grep -v ^-rwx
+#    - <<: *lint
+#      php: 7.0
+#
+#    - stage: test
+#      php: 7.2
+#      env: TYPO3_VERSION=^8.7.10
+#    - stage: test
+#      php: 7.1
+#      env: TYPO3_VERSION=^8.7.10
+#    - stage: test
+#      php: 7.0
+#      env: TYPO3_VERSION=^8.7.10
+#    - stage: test
+#      php: 7.0
+#      env: TYPO3_VERSION=^8.7.10 PREFER_LOWEST="--prefer-lowest"
+#    - stage: test
+#      php: 7.2
+#      env: TYPO3_VERSION="~9.1.0"
+#    - stage: test
+#      php: 7.2
+#      env: TYPO3_VERSION="9.2.*@dev"
+#
+#    - stage: test
+#      php: 7.1
+#      env: Consistency checks
+#      before_install: skip
+#      install: skip
+#      before_script: skip
+#      script:
+#        - >
+#          if [ -n "$TRAVIS_TAG" ]; then
+#            composer set-version $TRAVIS_TAG
+#            test -z "$(git diff --shortstat 2> /dev/null | tail -n1)";
+#          fi
+#        - composer extension-create-libs && ls -la Libraries/*.phar | grep -v ^-rwx
 
     - stage: sonar code scanner
       if: type = push AND branch IN (master, develop)
@@ -116,7 +116,7 @@ jobs:
         - git fetch --unshallow
         - export COMPOSER_ROOT_VERSION=5.2.0
         - composer install
-        - .Build/bin/phpunit --whitelist Classes --coverage-clover clover.xml --log-junit junit.xml
+        - .Build/bin/phpunit --whitelist Classes --coverage-clover .Build/clover.xml --log-junit .Build/junit.xml
         - >
           if [ -n "$SONAR_TOKEN" ]; then
             sonar-scanner

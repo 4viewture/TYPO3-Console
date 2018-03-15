@@ -21,7 +21,7 @@ class ConfigurationCommandControllerTest extends AbstractCommandTest
      */
     public function configurationCanBeShown()
     {
-        $output = $this->executeConsoleCommand('configuration:show', ['BE/installToolPassword']);
+        $output = $this->executeCoveredConsoleCommand('configuration:show', ['BE/installToolPassword']);
         $config = require getenv('TYPO3_PATH_ROOT') . '/typo3conf/LocalConfiguration.php';
         $this->assertContains($config['BE']['installToolPassword'], $output);
     }
@@ -31,7 +31,7 @@ class ConfigurationCommandControllerTest extends AbstractCommandTest
      */
     public function localConfigurationCanBeShown()
     {
-        $output = $this->executeConsoleCommand('configuration:showlocal', ['BE/installToolPassword']);
+        $output = $this->executeCoveredConsoleCommand('configuration:showlocal', ['BE/installToolPassword']);
         $config = require getenv('TYPO3_PATH_ROOT') . '/typo3conf/LocalConfiguration.php';
         $this->assertContains($config['BE']['installToolPassword'], $output);
     }
@@ -41,7 +41,7 @@ class ConfigurationCommandControllerTest extends AbstractCommandTest
      */
     public function localConfigurationCanBeShownAsJson()
     {
-        $output = $this->executeConsoleCommand('configuration:showlocal', ['BE/installToolPassword', '--json']);
+        $output = $this->executeCoveredConsoleCommand('configuration:showlocal', ['BE/installToolPassword', '--json']);
         $config = require getenv('TYPO3_PATH_ROOT') . '/typo3conf/LocalConfiguration.php';
         $this->assertSame($config['BE']['installToolPassword'], \json_decode($output));
     }
@@ -51,7 +51,7 @@ class ConfigurationCommandControllerTest extends AbstractCommandTest
      */
     public function activeConfigurationCanBeShown()
     {
-        $output = $this->executeConsoleCommand('configuration:showactive', ['BE/installToolPassword']);
+        $output = $this->executeCoveredConsoleCommand('configuration:showactive', ['BE/installToolPassword']);
         $config = require getenv('TYPO3_PATH_ROOT') . '/typo3conf/LocalConfiguration.php';
         $this->assertContains($config['BE']['installToolPassword'], $output);
     }
@@ -61,7 +61,7 @@ class ConfigurationCommandControllerTest extends AbstractCommandTest
      */
     public function activeConfigurationCanBeShownAsJson()
     {
-        $output = $this->executeConsoleCommand('configuration:showactive', ['BE/installToolPassword', '--json']);
+        $output = $this->executeCoveredConsoleCommand('configuration:showactive', ['BE/installToolPassword', '--json']);
         $config = require getenv('TYPO3_PATH_ROOT') . '/typo3conf/LocalConfiguration.php';
         $this->assertSame($config['BE']['installToolPassword'], \json_decode($output));
     }
@@ -71,7 +71,7 @@ class ConfigurationCommandControllerTest extends AbstractCommandTest
      */
     public function activeConfigurationReflectsRealState()
     {
-        $output = $this->executeConsoleCommand('configuration:showactive', ['SYS/caching/cacheConfigurations/extbase_datamapfactory_datamap/backend', '--json']);
+        $output = $this->executeCoveredConsoleCommand('configuration:showactive', ['SYS/caching/cacheConfigurations/extbase_datamapfactory_datamap/backend', '--json']);
         $this->assertSame('TYPO3\\CMS\\Core\\Cache\\Backend\\Typo3DatabaseBackend', \json_decode($output));
     }
 
@@ -82,10 +82,10 @@ class ConfigurationCommandControllerTest extends AbstractCommandTest
     {
         $config = require getenv('TYPO3_PATH_ROOT') . '/typo3conf/LocalConfiguration.php';
         $oldPassword = $config['BE']['installToolPassword'];
-        $this->executeConsoleCommand('configuration:set', ['BE/installToolPassword', 'foobar']);
+        $this->executeCoveredConsoleCommand('configuration:set', ['BE/installToolPassword', 'foobar']);
         $config = require getenv('TYPO3_PATH_ROOT') . '/typo3conf/LocalConfiguration.php';
         $this->assertSame('foobar', $config['BE']['installToolPassword']);
-        $this->executeConsoleCommand('configuration:set', ['BE/installToolPassword', $oldPassword]);
+        $this->executeCoveredConsoleCommand('configuration:set', ['BE/installToolPassword', $oldPassword]);
         $config = require getenv('TYPO3_PATH_ROOT') . '/typo3conf/LocalConfiguration.php';
         $this->assertSame($oldPassword, $config['BE']['installToolPassword']);
     }
@@ -97,10 +97,10 @@ class ConfigurationCommandControllerTest extends AbstractCommandTest
     {
         $config = require getenv('TYPO3_PATH_ROOT') . '/typo3conf/LocalConfiguration.php';
         $oldPassword = $config['BE']['installToolPassword'];
-        $this->executeConsoleCommand('configuration:remove', ['BE/installToolPassword', '--force']);
+        $this->executeCoveredConsoleCommand('configuration:remove', ['BE/installToolPassword', '--force']);
         $config = require getenv('TYPO3_PATH_ROOT') . '/typo3conf/LocalConfiguration.php';
         $this->assertArrayNotHasKey('installToolPassword', $config['BE']);
-        $this->executeConsoleCommand('configuration:set', ['BE/installToolPassword', $oldPassword]);
+        $this->executeCoveredConsoleCommand('configuration:set', ['BE/installToolPassword', $oldPassword]);
         $config = require getenv('TYPO3_PATH_ROOT') . '/typo3conf/LocalConfiguration.php';
         $this->assertSame($oldPassword, $config['BE']['installToolPassword']);
     }
@@ -110,7 +110,7 @@ class ConfigurationCommandControllerTest extends AbstractCommandTest
      */
     public function numericalIndexedArraysCanBeSet()
     {
-        $this->executeConsoleCommand('configuration:set', ['EXTCONF/lang/availableLanguages/0', 'fr_FR']);
+        $this->executeCoveredConsoleCommand('configuration:set', ['EXTCONF/lang/availableLanguages/0', 'fr_FR']);
         $config = require getenv('TYPO3_PATH_ROOT') . '/typo3conf/LocalConfiguration.php';
         $this->assertSame('fr_FR', $config['EXTCONF']['lang']['availableLanguages'][0]);
     }
@@ -120,7 +120,7 @@ class ConfigurationCommandControllerTest extends AbstractCommandTest
      */
     public function associativeArraysCanBeSet()
     {
-        $this->executeConsoleCommand('configuration:set', ['EXTCONF/foo/bar', 'baz']);
+        $this->executeCoveredConsoleCommand('configuration:set', ['EXTCONF/foo/bar', 'baz']);
         $config = require getenv('TYPO3_PATH_ROOT') . '/typo3conf/LocalConfiguration.php';
         $this->assertSame('baz', $config['EXTCONF']['foo']['bar']);
     }

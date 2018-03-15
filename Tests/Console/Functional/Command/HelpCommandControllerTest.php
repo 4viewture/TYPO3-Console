@@ -24,7 +24,7 @@ class HelpCommandControllerTest extends AbstractCommandTest
     public function callingNotExistingCommandReturnsErrorCode()
     {
         try {
-            $this->commandDispatcher->executeCommand('foo');
+            $this->executeCoveredConsoleCommand('foo', [], [], null, true);
         } catch (FailedSubProcessCommandException $e) {
             $this->assertSame(1, $e->getExitCode());
         }
@@ -35,7 +35,7 @@ class HelpCommandControllerTest extends AbstractCommandTest
      */
     public function helpCanBeShown()
     {
-        $output = $this->executeConsoleCommand('help');
+        $output = $this->executeCoveredConsoleCommand('help');
         $this->assertContains('Usage:', $output);
     }
 }

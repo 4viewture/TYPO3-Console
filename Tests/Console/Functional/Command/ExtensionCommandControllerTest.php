@@ -23,7 +23,7 @@ class ExtensionCommandControllerTest extends AbstractCommandTest
      */
     public function extensionListShowsActiveAndInactiveExtensions()
     {
-        $output = $this->executeConsoleCommand('extension:list');
+        $output = $this->executeCoveredConsoleCommand('extension:list');
         $this->assertContains('Extension key', $output);
         $this->assertContains('extbase', $output);
         $this->assertContains('filemetadata', $output);
@@ -34,7 +34,7 @@ class ExtensionCommandControllerTest extends AbstractCommandTest
      */
     public function extensionListRawShowsActiveAndInactiveExtensionsButNoHeader()
     {
-        $output = $this->executeConsoleCommand('extension:list', ['--raw']);
+        $output = $this->executeCoveredConsoleCommand('extension:list', ['--raw']);
         $this->assertNotContains('Extension key', $output);
         $this->assertContains('extbase', $output);
         $this->assertContains('filemetadata', $output);
@@ -45,7 +45,7 @@ class ExtensionCommandControllerTest extends AbstractCommandTest
      */
     public function extensionListCanShowOnlyActiveExtensions()
     {
-        $output = $this->executeConsoleCommand('extension:list', ['--active', '--raw']);
+        $output = $this->executeCoveredConsoleCommand('extension:list', ['--active', '--raw']);
         $this->assertContains('extbase', $output);
         $this->assertNotContains('filemetadata', $output);
     }
@@ -55,7 +55,7 @@ class ExtensionCommandControllerTest extends AbstractCommandTest
      */
     public function extensionListCanShowOnlyInActiveExtensions()
     {
-        $output = $this->executeConsoleCommand('extension:list', ['--inactive', '--raw']);
+        $output = $this->executeCoveredConsoleCommand('extension:list', ['--inactive', '--raw']);
         $this->assertNotContains('extbase', $output);
         $this->assertContains('filemetadata', $output);
     }
@@ -68,14 +68,14 @@ class ExtensionCommandControllerTest extends AbstractCommandTest
         $this->backupDatabase();
         $this->installFixtureExtensionCode('ext_test');
 
-        $output = $this->executeConsoleCommand('extension:activate', ['ext_test']);
+        $output = $this->executeCoveredConsoleCommand('extension:activate', ['ext_test']);
         $this->assertContains('Extension "ext_test" is now active.', $output);
         $this->assertContains('Extension "ext_test" is now set up.', $output);
 
         $output = $this->executeConsoleCommand('database:updateschema');
         $this->assertContains('No schema updates were performed for update types:', $output);
 
-        $output = $this->executeConsoleCommand('extension:deactivate', ['ext_test']);
+        $output = $this->executeCoveredConsoleCommand('extension:deactivate', ['ext_test']);
         $this->assertContains('Extension "ext_test" is now inactive.', $output);
 
         $this->removeFixtureExtensionCode('ext_test');
@@ -90,18 +90,18 @@ class ExtensionCommandControllerTest extends AbstractCommandTest
         $this->backupDatabase();
         $this->installFixtureExtensionCode('ext_test');
 
-        $output = $this->executeConsoleCommand('extension:activate', ['ext_test']);
+        $output = $this->executeCoveredConsoleCommand('extension:activate', ['ext_test']);
         $this->assertContains('Extension "ext_test" is now active.', $output);
         $this->assertContains('Extension "ext_test" is now set up.', $output);
 
-        $output = $this->executeConsoleCommand('extension:activate', ['core']);
+        $output = $this->executeCoveredConsoleCommand('extension:activate', ['core']);
         $this->assertNotContains('is now active.', $output);
         $this->assertContains('Extension "core" is now set up.', $output);
 
         $output = $this->executeConsoleCommand('database:updateschema');
         $this->assertContains('No schema updates were performed for update types:', $output);
 
-        $output = $this->executeConsoleCommand('extension:deactivate', ['ext_test']);
+        $output = $this->executeCoveredConsoleCommand('extension:deactivate', ['ext_test']);
         $this->assertContains('Extension "ext_test" is now inactive.', $output);
 
         $this->removeFixtureExtensionCode('ext_test');
@@ -115,10 +115,10 @@ class ExtensionCommandControllerTest extends AbstractCommandTest
     {
         $this->installFixtureExtensionCode('ext_config');
         try {
-            $output = $this->executeConsoleCommand('extension:activate', ['ext_config']);
+            $output = $this->executeCoveredConsoleCommand('extension:activate', ['ext_config']);
             $this->assertContains('Extension "ext_config" is now active.', $output);
             $this->assertContains('Extension "ext_config" is now set up.', $output);
-            $config = @\json_decode(trim($this->executeConsoleCommand('configuration:showlocal', ['EXT/extConf', '--json'])), true);
+            $config = @\json_decode(trim($this->executeCoveredConsoleCommand('configuration:showlocal', ['EXT/extConf', '--json'])), true);
             $this->assertArrayHasKey('ext_config', $config);
         } finally {
             $this->executeConsoleCommand('extension:deactivate', ['ext_config']);
@@ -136,10 +136,10 @@ class ExtensionCommandControllerTest extends AbstractCommandTest
         $this->installFixtureExtensionCode('ext_config');
         try {
             $this->executeConsoleCommand('install:generatepackagestates', ['--activate-default']);
-            $output = $this->executeConsoleCommand('extension:setupactive');
+            $output = $this->executeCoveredConsoleCommand('extension:setupactive');
             $this->assertContains('ext_config', $output);
             $this->assertContains('are now set up.', $output);
-            $config = @\json_decode(trim($this->executeConsoleCommand('configuration:showlocal', ['EXT/extConf', '--json'])), true);
+            $config = @\json_decode(trim($this->executeCoveredConsoleCommand('configuration:showlocal', ['EXT/extConf', '--json'])), true);
             $this->assertArrayHasKey('ext_config', $config);
         } finally {
             $this->removeFixtureExtensionCode('ext_config');
@@ -158,14 +158,14 @@ class ExtensionCommandControllerTest extends AbstractCommandTest
         $this->installFixtureExtensionCode('ext_test');
         $this->executeConsoleCommand('install:generatepackagestates', ['--activate-default']);
 
-        $output = $this->executeConsoleCommand('extension:setupactive');
+        $output = $this->executeCoveredConsoleCommand('extension:setupactive');
         $this->assertContains('ext_test', $output);
         $this->assertContains('are now set up.', $output);
 
         $output = $this->executeConsoleCommand('database:updateschema');
         $this->assertContains('No schema updates were performed for update types:', $output);
 
-        $output = $this->executeConsoleCommand('extension:deactivate', ['ext_test']);
+        $output = $this->executeCoveredConsoleCommand('extension:deactivate', ['ext_test']);
         $this->assertContains('Extension "ext_test" is now inactive.', $output);
 
         $this->removeFixtureExtensionCode('ext_test');
@@ -194,7 +194,7 @@ class ExtensionCommandControllerTest extends AbstractCommandTest
     {
         $this->copyDirectory(getenv('TYPO3_PATH_ROOT') . '/typo3/sysext', getenv('TYPO3_PATH_ROOT') . '/typo3temp/sysext');
 
-        $output = $this->executeConsoleCommand('extension:removeinactive', ['--force']);
+        $output = $this->executeCoveredConsoleCommand('extension:removeinactive', ['--force']);
         $this->assertContains('filemetadata', $output);
 
         $this->copyDirectory(getenv('TYPO3_PATH_ROOT') . '/typo3temp/sysext', getenv('TYPO3_PATH_ROOT') . '/typo3/sysext');
