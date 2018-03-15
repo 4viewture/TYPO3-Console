@@ -191,11 +191,10 @@ class DatabaseCommandController extends CommandController
     protected function buildOutputClosure()
     {
         return function ($type, $data) {
-            $output = $this->output->getSymfonyConsoleOutput();
             if (Process::OUT === $type) {
                 echo $data;
             } elseif (Process::ERR === $type) {
-                $output->getErrorOutput()->write($data);
+                $this->output->getErrorOutput()->write($data);
             }
         };
     }

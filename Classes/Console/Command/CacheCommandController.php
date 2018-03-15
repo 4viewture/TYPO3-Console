@@ -69,8 +69,8 @@ class CacheCommandController extends CommandController
                 if ($isApplicationFullyCapable) {
                     throw $e;
                 }
-                $this->output->getSymfonyConsoleOutput()->getErrorOutput()->writeln('<warning>Could not load extension configuration.</warning>');
-                $this->output->getSymfonyConsoleOutput()->getErrorOutput()->writeln('<warning>Some caches might not have been flushed.</warning>');
+                $this->output->getErrorOutput()->writeln('<warning>Could not load extension configuration.</warning>');
+                $this->output->getErrorOutput()->writeln('<warning>Some caches might not have been flushed.</warning>');
             }
         } else {
             $this->cacheService->flush($force);

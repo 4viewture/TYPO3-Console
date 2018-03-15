@@ -24,6 +24,7 @@ use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\Input;
 use Symfony\Component\Console\Output\ConsoleOutput as SymfonyConsoleOutput;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
@@ -90,11 +91,19 @@ class ConsoleOutput
     }
 
     /**
-     * @return SymfonyConsoleOutput
+     * @return OutputInterface
      */
-    public function getSymfonyConsoleOutput()
+    public function getSymfonyConsoleOutput(): OutputInterface
     {
         return $this->output;
+    }
+
+    /**
+     * @return OutputInterface
+     */
+    public function getErrorOutput(): OutputInterface
+    {
+        return $this->output instanceof SymfonyConsoleOutput ? $this->output : new NullOutput();
     }
 
     /**
